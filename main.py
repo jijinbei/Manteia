@@ -1,22 +1,22 @@
 import os
-import discord
+import asyncio
 from dotenv import load_dotenv
+import discord
+from discord.ext import commands
 
 load_dotenv()
+intents = discord.Intents.all()  # 全ての権限を有効にする
+intents.members = True  # メンバーを取得するために必要
+bot = commands.Bot(command_prefix='!', intents=intents, help_command=None)  # !で始まるコマンドをトリガーにする
 
-class MyClient(discord.Client):
-    async def on_ready(self):
-        print('Logged on as', self.user)
 
-    async def on_message(self, message):
-        # don't respond to ourselves
-        if message.author == self.user:
-            return
+async def load():
+    for filename in os.listdir('./cogs'):
+        if filename.endswith('.py'):
+            await bot.load_extension(f'cogs.{filename[:-3]}')
 
-        if message.content == 'ping':
-            await message.channel.send('pong')
+async def main():
+    await load()
+    await bot.start(os.getenv("DISCORD_TOKEN"))
 
-intents = discord.Intents.default()
-intents.message_content = True
-client = MyClient(intents=intents)
-client.run(os.getenv("DISCORD_TOKEN"))
+asyncio.run(main())

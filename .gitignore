@@ -1,0 +1,8 @@
+# Discord Tokenを載せないように.envファイルを除外
+.env
+# pythonのパッケージを除外
+.venv/
+# databaseは載せない
+database.sqlite
+# キャッシュの削除
+*/__pycache__/
