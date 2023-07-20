@@ -6,3 +6,5 @@
 database.sqlite
 # キャッシュの削除
 */__pycache__/
+# examdataの削除
+examdata/
