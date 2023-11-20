@@ -8,12 +8,13 @@ from PIL import Image
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 import traceback
+from lib.embed import create_embed, error_embed
 
 class SaveCog(commands.Cog):
-    def __init__(self, bot:discord.Client):
+    def __init__(self, bot:discord.Client, saved_path="saved_images", db_name="db.sqlite"):
         self.bot = bot
-        self.saved_path = "saved_images"
-        self.db_path = self.saved_path + "/db.sqlite"
+        self.saved_path = saved_path
+        self.db_path = saved_path + "/" + db_name
     
     # 初期設定
     @commands.Cog.listener()
@@ -26,9 +27,9 @@ class SaveCog(commands.Cog):
             # databaseの作成
             db = sqlite3.connect(self.db_path)
             cur = db.cursor()
-            table = f"""create table if not exists {self.saved_path} (
+            table = f"""CREATE TABLE IF NOT EXISTS exam_table (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        cource TEXT,
+                        course TEXT,
                         year INTEGER,
                         path TEXT)"""
             cur.execute(table)
@@ -52,16 +53,14 @@ class SaveCog(commands.Cog):
         output_pdf_path = f"{self.saved_path}/{course}/{course}_{year}.pdf"
         
         if len(attachments) == 0:
-            embed = self._error_embed("画像が添付されていません。")
+            embed = error_embed("画像が添付されていません。")
+            print(embed)
             await ctx.send(embed=embed)
             return
         
         if '.pdf' in attachments[0].filename:# pdfならそのまま保存
-            print("pdfだよ")
             self._save_pdf(attachments[0].url, output_pdf_path)
         else: # 画像ならpdfに変換して保存
-            print("pdfじゃないよ")
-            
             # 画像のダウンロード
             images = []
             for attachment in attachments:
@@ -71,24 +70,19 @@ class SaveCog(commands.Cog):
                     return
                 images.append(image)
             
-            print("imagesは創られていますか？",images)
-            
             # 画像ならpdfに変換して保存
             self._convert_images_to_pdf(images, output_pdf_path)
             print("画像をpdfに変換して保存しました")
         
-        
-        
         # databaseに保存
         con = sqlite3.connect(self.db_path)
         cur = con.cursor()
-        insert = f"insert into {self.saved_path} (cource, year, path) values (?, ?, ?)"
+        insert = "INSERT INTO exam_table (course, year, path) VALUES (?, ?, ?)"
         cur.execute(insert, (course, year, output_pdf_path))
         con.commit()
-        print("databaseに保存しました")
-        
+
         # 保存完了のメッセージ
-        save_embed = self._create_embed("画像の保存", f"{course}_{year}.pdfを保存しました。")
+        save_embed = create_embed("画像の保存", f"{course}_{year}.pdfを保存しました。")
         await ctx.send(embed=save_embed)
     
     # 画像のダウンロード
@@ -103,7 +97,7 @@ class SaveCog(commands.Cog):
             # 拡張子の確認
             extension = filename.split('.')[-1].lower()
             if extension not in allowed_extensions: # 画像が適正でない場合
-                extention_error_embed = self._error_embed(f"{extension}は許可されていないファイル形式です。\n許可されるファイル形式は{allowed_extensions}です。")
+                extention_error_embed = error_embed(f"{extension}は許可されていないファイル形式です。\n許可されるファイル形式は{allowed_extensions}です。")
                 await ctx.send(embed=extention_error_embed)
                 return None
             else:
@@ -114,6 +108,7 @@ class SaveCog(commands.Cog):
             print(f"エラー発生: {e}")
             traceback.print_exc()  # スタックトレースの出力
     
+    # 画像をpdfに変換して保存
     def _convert_images_to_pdf(self, images, output_pdf_path):
         try:
             # 保存先の作成
@@ -138,14 +133,6 @@ class SaveCog(commands.Cog):
         response = requests.get(url)
         with open(output_pdf_path, 'wb') as f:
             f.write(response.content)
-    
-    def _create_embed(self, title, description):
-        embed = discord.Embed(title=title, description=description, color=0x00ff00)
-        return embed
-    
-    def _error_embed(self, description):
-        embed = discord.Embed(title="エラー発生", description=description, color=0xff0000)
-        return embed
 
 async def setup(bot:discord.Client):
     await bot.add_cog(SaveCog(bot))
