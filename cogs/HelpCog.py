@@ -1,7 +1,7 @@
 from discord.ext import commands
 from discord import Embed, File
 
-class help(commands.Cog):
+class HelpCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
@@ -26,4 +26,4 @@ class help(commands.Cog):
             await message.channel.send(file=file, embed=embed) # ファイルとembedを両方添えて送信する
 
 async def setup(bot):
-    await bot.add_cog(help(bot))
+    await bot.add_cog(HelpCog(bot))

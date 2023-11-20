@@ -2,9 +2,9 @@
 .env
 # pythonのパッケージを除外
 .venv/
-# databaseは載せない
-database.sqlite
 # キャッシュの削除
 */__pycache__/
 # examdataの削除
-examdata/
+saved_images/
+# 過去問
+過去問/
