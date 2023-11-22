@@ -36,7 +36,7 @@ class FileHandlerCog(commands.Cog):
         if len(years) == 1:
             course_description = f"{years[0]}年度の試験問題"
         else:
-            course_description = f"{years[0]}年度から{years[-1]}年度の試験問題"
+            course_description = f"{min(years)}年度から{max(years)}年度の試験問題"
         course_embed = create_embed(f"{course}の試験問題",course_description)
         await ctx.send(embed=course_embed)
         await ctx.send(files=files)
