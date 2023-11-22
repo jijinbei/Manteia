@@ -17,20 +17,26 @@ class FileHandlerCog(commands.Cog):
         print(f'{self.bot.user.name}のFileHandlerCogが起動しました。')
     
     @commands.command(name='exams', help='指定されたコースの全ての年度の試験問題を取得')
-    async def get_all_years(self, ctx, course: str):
-        years = self._get_years_for_course(course)
-        if not years:
-            not_found_embed = error_embed(f"{course}に関連する試験問題は見つかりませんでした。")
-            await ctx.send(embed=not_found_embed)
+    async def output_exams(self, ctx, course: str):
+        datas = self._get_data_for_course(course)
+        if not datas:
+            await ctx.send(embed=error_embed(f"{course}に関連する試験問題は見つかりませんでした。"))
             return
         
         files = []
-        for year in years:
-            file_path = f"{self.saved_path}/{course}/{course}_{year}.pdf"
+        years = []
+        for data in datas:
+            year, file_path = data
+            # ファイルが存在するか確認
             if os.path.exists(file_path):
                 files.append(discord.File(file_path))
+                years.append(year)
         
-        course_description = f"{years[0]}年度から{years[-1]}年度の試験問題"
+        # メッセージ
+        if len(years) == 1:
+            course_description = f"{years[0]}年度の試験問題"
+        else:
+            course_description = f"{years[0]}年度から{years[-1]}年度の試験問題"
         course_embed = create_embed(f"{course}の試験問題",course_description)
         await ctx.send(embed=course_embed)
         await ctx.send(files=files)
@@ -43,20 +49,22 @@ class FileHandlerCog(commands.Cog):
             await ctx.send("試験はありません。")
             return
         
-        embed = discord.Embed(title="試験の授業名と年度の一覧", description="現在保存されている授業と年度の一覧は次の通りです", color=0x00ff00)
+        embed = create_embed("試験の授業名と年度の一覧", "現在保存されている授業と年度の一覧は次の通りです")
         for course, years in courses.items():
-            embed.add_field(name=course, value=", ".join(map(str, years)), inline=False)
+            value_str = ",  ".join([f"{year}x{count}" if count > 1 else f"{year}" for year, count in years.items()])
+            embed.add_field(name=course, value=value_str, inline=False)
         
         await ctx.send(embed=embed)
     
-    def _get_years_for_course(self, course):
+    def _get_data_for_course(self, course):
         try:
             con = sqlite3.connect(self.db_path)
             cur = con.cursor()
-            cur.execute(f"SELECT DISTINCT year FROM exam_table WHERE course = ?", (course,))
-            years = cur.fetchall()
+            cur.execute(f"SELECT year, path FROM exam_table WHERE course = ?", (course,))
+            data = cur.fetchall()
+            print(data)
             con.close()
-            return [year[0] for year in years]  # 年度のリストを返す
+            return data  # 年度のリストを返す ex)[(2020, 3), (2021, 1)]
         except Exception as e:
             print(f"エラー発生: {e}")
             traceback.print_exc()  # スタックトレースの出力
@@ -67,14 +75,17 @@ class FileHandlerCog(commands.Cog):
         cur.execute("SELECT course, year FROM exam_table")
         rows = cur.fetchall()
         con.close()
-        
         courses = {}
+        
         for row in rows:
             course, year = row
-            if course in courses:
-                courses[course].append(year)
+            if course in courses: # 既にある授業なら
+                if year in courses[course]:
+                    courses[course][year] += 1 # 既にある年度ならカウントを増やす
+                else:
+                    courses[course][year] = 1 # 新しい年度を追加
             else:
-                courses[course] = [year]
+                courses[course] = {year: 1}
         
         return courses
 
