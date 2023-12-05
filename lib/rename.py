@@ -1,5 +1,5 @@
 # ファイル名の変更(1,Ⅰ,一などをⅠに統一)
-def cource_rename(name):
+def cource_rename(name: str):
     list1 = ["1","i","Ⅰ"]
     for i in list1:
         name = name.replace(i, "I")
