@@ -4,6 +4,7 @@ import os
 import sqlite3
 import traceback
 from lib.embed import create_embed, error_embed
+from lib.rename import cource_rename
 
 class FileHandlerCog(commands.Cog):
     def __init__(self, bot, saved_path="saved_images", db_name="db.sqlite"):
@@ -18,6 +19,7 @@ class FileHandlerCog(commands.Cog):
     
     @commands.command(name='exams', help='指定されたコースの全ての年度の試験問題を取得')
     async def output_exams(self, ctx, course: str):
+        course = cource_rename(course)
         datas = self._get_data_for_course(course)
         if not datas:
             await ctx.send(embed=error_embed(f"{course}に関連する試験問題は見つかりませんでした。"))

@@ -9,6 +9,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 import traceback
 from lib.embed import create_embed, error_embed
+from lib.rename import cource_rename
 
 class SaveCog(commands.Cog):
     def __init__(self, bot:discord.Client, saved_path="saved_images", db_name="db.sqlite"):
@@ -49,6 +50,8 @@ class SaveCog(commands.Cog):
         # 入力ファイル  
         attachments = ctx.message.attachments
         # 出力ファイル
+        course = cource_rename(course)
+        print(course)
         filename = self._generate_unique_filename(course, year)
         output_pdf_path = f"{self.saved_path}/{course}/{filename}"
         
