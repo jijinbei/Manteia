@@ -1,12 +1,13 @@
 # MANTEIA
 
 過去問を共有するためのDiscord Bot
+
 Manteia: ギリシャ語で「神託」
 
 ## インストール
 
-`.env`ファイルに`DISCORD_TOKEN="your_token"`を書き込む
-必要なライブラリをインストールする
+- `.env`ファイルに`DISCORD_TOKEN="your_token"`を書き込む
+- 必要なライブラリをインストールする
 
 ## 使い方
 
