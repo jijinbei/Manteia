@@ -51,12 +51,24 @@ class FileHandlerCog(commands.Cog):
         if not courses:
             await ctx.send("過去問はありません。")
             return
+        
         embed = create_embed("過去問の授業名と年度の一覧", "現在保存されている授業と年度の一覧は次の通りです")
+        field_count = 0 # 文字数制限のため、15個ごとにメッセージを送信する
         
         for course, years in courses.items():
-            value_str = ",  ".join([f"{year}x{count}" if count > 1 else f"{year}" for year, count in years.items()])
-            embed.add_field(name=course, value=value_str, inline=False)
-        await ctx.send(embed=embed)
+            year_counts = [f"{year}x{count}" if count > 1 else f"{year}" for year, count in years.items()]
+            year_counts_txt = ",  ".join(year_counts)
+            embed.add_field(name=course, value=year_counts_txt, inline=False)
+            field_count += 1
+
+            if field_count == 15:
+                await ctx.send(embed=embed)
+                embed = create_embed("過去問の授業名と年度の一覧（続き）", "")
+                field_count = 0
+
+        if field_count > 0:
+            await ctx.send(embed=embed)
+
 
 def get_data_for_course(course):
     con = sqlite3.connect(db_path)
