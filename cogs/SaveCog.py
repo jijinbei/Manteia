@@ -26,14 +26,15 @@ class SaveCog(commands.Cog):
                 os.mkdir(saved_path)
             
             # databaseの作成
-            db = sqlite3.connect(db_path)
-            cur = db.cursor()
+            con = sqlite3.connect(db_path)
+            cur = con.cursor()
             table = f"""CREATE TABLE IF NOT EXISTS exam_table (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
                         course TEXT,
                         year INTEGER,
                         path TEXT)"""
             cur.execute(table)
+            con.close()
             print(f'{self.bot.user.name}のSaveCog起動成功')
         except Exception as e:
             print(f"SaveCog起動失敗\nError Type: {type(e).__name__}, Error Message: {e}")
