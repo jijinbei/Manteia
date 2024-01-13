@@ -1,10 +1,7 @@
-# Discord Tokenを載せないように.envファイルを除外
 .env
-# pythonのパッケージを除外
 .venv/
-# キャッシュの削除
 */__pycache__/
-# examdataの削除
+
 saved_images/
-# 過去問
+exams/
 過去問/

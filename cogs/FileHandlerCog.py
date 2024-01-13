@@ -7,10 +7,9 @@ from lib.embed import create_embed, error_embed
 from lib.rename import cource_rename
 
 class FileHandlerCog(commands.Cog):
-    def __init__(self, bot, saved_path="saved_images", db_name="db.sqlite"):
+    def __init__(self, bot: discord.Client):
         self.bot = bot
-        self.saved_path = saved_path
-        self.db_path = saved_path + "/" + db_name
+        self.db_path = "exams/db.sqlite"
     
     # 初期設定
     @commands.Cog.listener()
