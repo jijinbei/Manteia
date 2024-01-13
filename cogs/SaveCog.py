@@ -53,7 +53,7 @@ class SaveCog(commands.Cog):
         course = cource_rename(course)
         print(course)
         filename = generate_unique_filename(course, year)
-        output_pdf_path = f"{saved_path}/{course}/{filename}"
+        output_pdf_path = f"{saved_path}\{course}\{filename}"
         
         if len(attachments) == 0:
             embed = error_embed("画像が添付されていません。")
@@ -139,7 +139,7 @@ def generate_unique_filename(course, year):
     base_filename = f"{course}_{year}"
     
     # データベースで既存のファイル名を確認
-    con = sqlite3.connect("exams/db.sqlite")
+    con = sqlite3.connect("exams\db.sqlite")
     cur = con.cursor()
     
     cur.execute("SELECT COUNT(*) FROM exam_table WHERE course = ? AND year = ?", (course, year))
