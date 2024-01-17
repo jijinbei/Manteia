@@ -31,7 +31,7 @@ files = glob.glob("exams/**/*")
 for file in files:
     print(file)
 
-conn = sqlite3.connect("exams\db.sqlite")
+conn = sqlite3.connect("exams/db.sqlite")
 cur = conn.cursor()
 
 table = f"""CREATE TABLE IF NOT EXISTS exam_table (
