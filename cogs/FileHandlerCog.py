@@ -2,7 +2,6 @@ from discord.ext import commands
 import discord
 import os
 import sqlite3
-import traceback
 from lib.embed import create_embed, error_embed
 from lib.rename import cource_rename
 
