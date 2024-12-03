@@ -1,5 +1,0 @@
-discord==2.3.2
-pip-chill==1.0.3
-python-dotenv==1.0.0
-reportlab==4.0.7
-requests==2.31.0

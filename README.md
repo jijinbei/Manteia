@@ -7,7 +7,18 @@ Manteia: ギリシャ語で「神託」
 ## インストール
 
 - `.env`ファイルに`DISCORD_TOKEN="your_token"`を書き込む
-- 必要なライブラリをインストールする
+
+- パッケージをインストール
+
+```bash
+rye sync
+```
+
+## 実行方法
+
+```bash
+rye run manteia
+```
 
 ## 使い方
 
