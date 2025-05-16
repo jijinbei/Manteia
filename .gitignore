@@ -1,7 +1,13 @@
-.env
-.venv/
-**/*/__pycache__/
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
 
-saved_images/
+# Virtual environments
+.venv
+
+.env
 exams/
-過去問/

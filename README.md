@@ -11,13 +11,13 @@ Manteia: ギリシャ語で「神託」
 - パッケージをインストール
 
 ```bash
-rye sync
+uv sync
 ```
 
 ## 実行方法
 
 ```bash
-rye run manteia
+uv run main.py
 ```
 
 ## 使い方
